@@ -175,13 +175,13 @@ h3 {
   margin: 18px 0;
 }
 
-.field-group label {
+.field-group label,
+.field-label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-weight: 800;
 }
 
-select,
 input {
   width: 100%;
   border: 1px solid var(--line);
@@ -189,6 +189,37 @@ input {
   padding: 12px 14px;
   background: #fff;
   color: var(--text);
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-button {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 800;
+  text-align: center;
+  touch-action: manipulation;
+}
+
+.choice-button.is-selected {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(228, 111, 44, 0.22);
+}
+
+.choice-button:focus-visible {
+  outline: 3px solid rgba(228, 111, 44, 0.32);
+  outline-offset: 2px;
 }
 
 .budget-row {
@@ -375,7 +406,8 @@ footer {
   }
 
   .feature-grid,
-  .recommendation-list {
+  .recommendation-list,
+  .choice-grid {
     grid-template-columns: 1fr;
   }
 

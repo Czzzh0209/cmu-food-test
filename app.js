@@ -40,21 +40,39 @@ function showScreen(screenId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function initSelects() {
-  const campusSelect = $('#campus-select');
-  campusSelect.innerHTML = DATA.campuses
-    .map((campus) => `<option value="${campus}">${campus}</option>`)
-    .join('');
+function renderChoiceButtons(containerSelector, items, selectedValue, valueGetter, labelGetter) {
+  const container = $(containerSelector);
+  container.innerHTML = items.map((item) => {
+    const value = valueGetter(item);
+    const label = labelGetter(item);
+    const selectedClass = value === selectedValue ? ' is-selected' : '';
+    return `
+      <button type="button" class="choice-button${selectedClass}" data-choice-value="${value}">
+        ${label}
+      </button>
+    `;
+  }).join('');
+}
 
-  const mealSelect = $('#meal-select');
-  mealSelect.innerHTML = DATA.mealTimes
-    .map((meal) => `<option value="${meal.id}">${meal.label}</option>`)
-    .join('');
+function renderSettingChoices() {
+  renderChoiceButtons(
+    '#campus-choice-list',
+    DATA.campuses,
+    state.campus,
+    (campus) => campus,
+    (campus) => campus
+  );
+
+  renderChoiceButtons(
+    '#meal-choice-list',
+    DATA.mealTimes,
+    state.mealTime,
+    (meal) => meal.id,
+    (meal) => meal.label
+  );
 }
 
 function readSettings() {
-  state.campus = $('#campus-select').value;
-  state.mealTime = $('#meal-select').value;
   state.budget = Number($('#budget-input').value) || 150;
 }
 
@@ -227,6 +245,20 @@ function restartQuiz() {
 function bindEvents() {
   $('#start-btn').addEventListener('click', () => showScreen('setup-screen'));
 
+  $('#campus-choice-list').addEventListener('click', (event) => {
+    const button = event.target.closest('[data-choice-value]');
+    if (!button) return;
+    state.campus = button.dataset.choiceValue;
+    renderSettingChoices();
+  });
+
+  $('#meal-choice-list').addEventListener('click', (event) => {
+    const button = event.target.closest('[data-choice-value]');
+    if (!button) return;
+    state.mealTime = button.dataset.choiceValue;
+    renderSettingChoices();
+  });
+
   $('#go-quiz-btn').addEventListener('click', () => {
     readSettings();
     state.currentQuestionIndex = 0;
@@ -267,5 +299,5 @@ function bindEvents() {
   $('#change-setting-btn').addEventListener('click', () => showScreen('setup-screen'));
 }
 
-initSelects();
+renderSettingChoices();
 bindEvents();
