@@ -1069,7 +1069,7 @@ window.CMU_FOOD_DATA = {
     },
     {
       "id": "Q3",
-      "text": "今天想吃哪種感覺？",
+      "text": "今天想吃哪種感覺？（1）",
       "options": [
         {
           "id": "Q3A",
@@ -1108,10 +1108,53 @@ window.CMU_FOOD_DATA = {
     },
     {
       "id": "Q4",
-      "text": "你今天的吃飯模式是？",
+      "text": "今天想吃哪種感覺？（2）",
       "options": [
         {
           "id": "Q4A",
+          "text": "便當、飯類，想穩穩吃飽",
+          "score": {
+            "fast": 1,
+            "cheap": 1
+          },
+          "hint": "飯類、吃飽"
+        },
+        {
+          "id": "Q4B",
+          "text": "丼飯、咖哩、日式，想吃有主題一點",
+          "score": {
+            "comfort": 2,
+            "heavy": 1
+          },
+          "hint": "日式、療癒"
+        },
+        {
+          "id": "Q4C",
+          "text": "滷味、小吃、自選菜，想自由搭配",
+          "score": {
+            "healthy": 1,
+            "cheap": 1,
+            "takeaway": 1
+          },
+          "hint": "自選、外帶"
+        },
+        {
+          "id": "Q4D",
+          "text": "咖啡、甜點、輕食，想坐著放鬆",
+          "score": {
+            "comfort": 3,
+            "social": 1
+          },
+          "hint": "放鬆、久坐"
+        }
+      ]
+    },
+    {
+      "id": "Q5",
+      "text": "你今天的吃飯模式是？",
+      "options": [
+        {
+          "id": "Q5A",
           "text": "一個人快速解決",
           "score": {
             "fast": 2
@@ -1119,7 +1162,7 @@ window.CMU_FOOD_DATA = {
           "hint": "快速解決"
         },
         {
-          "id": "Q4B",
+          "id": "Q5B",
           "text": "跟朋友一起吃",
           "score": {
             "social": 3
@@ -1127,7 +1170,7 @@ window.CMU_FOOD_DATA = {
           "hint": "朋友聚餐"
         },
         {
-          "id": "Q4C",
+          "id": "Q5C",
           "text": "想找能坐久一點的地方",
           "score": {
             "comfort": 2,
@@ -1136,7 +1179,7 @@ window.CMU_FOOD_DATA = {
           "hint": "久坐聊天"
         },
         {
-          "id": "Q4D",
+          "id": "Q5D",
           "text": "想外帶回去吃",
           "score": {
             "takeaway": 3
@@ -1146,11 +1189,11 @@ window.CMU_FOOD_DATA = {
       ]
     },
     {
-      "id": "Q5",
+      "id": "Q6",
       "text": "遇到排隊你會怎麼辦？",
       "options": [
         {
-          "id": "Q5A",
+          "id": "Q6A",
           "text": "看到人多直接放棄",
           "score": {
             "fast": 3
@@ -1158,7 +1201,7 @@ window.CMU_FOOD_DATA = {
           "hint": "不能排隊"
         },
         {
-          "id": "Q5B",
+          "id": "Q6B",
           "text": "等 5–10 分鐘可以",
           "score": {
             "fast": 1
@@ -1166,7 +1209,7 @@ window.CMU_FOOD_DATA = {
           "hint": "可小等"
         },
         {
-          "id": "Q5C",
+          "id": "Q6C",
           "text": "好吃就願意等",
           "score": {
             "comfort": 2
@@ -1174,7 +1217,7 @@ window.CMU_FOOD_DATA = {
           "hint": "願意等美食"
         },
         {
-          "id": "Q5D",
+          "id": "Q6D",
           "text": "可以先點餐再去拿",
           "score": {
             "takeaway": 2
@@ -1184,11 +1227,11 @@ window.CMU_FOOD_DATA = {
       ]
     },
     {
-      "id": "Q6",
+      "id": "Q7",
       "text": "選一個最像你現在心情的狀態",
       "options": [
         {
-          "id": "Q6A",
+          "id": "Q7A",
           "text": "下課衝出教室，想趕快補血",
           "score": {
             "fast": 2
@@ -1196,7 +1239,7 @@ window.CMU_FOOD_DATA = {
           "hint": "趕快補血"
         },
         {
-          "id": "Q6B",
+          "id": "Q7B",
           "text": "坐在位子上放空，不想做決定",
           "score": {
             "comfort": 2
@@ -1204,7 +1247,7 @@ window.CMU_FOOD_DATA = {
           "hint": "放空療癒"
         },
         {
-          "id": "Q6C",
+          "id": "Q7C",
           "text": "想跟朋友邊吃邊聊天",
           "score": {
             "social": 2
@@ -1212,7 +1255,7 @@ window.CMU_FOOD_DATA = {
           "hint": "聊天"
         },
         {
-          "id": "Q6D",
+          "id": "Q7D",
           "text": "想吃一餐讓今天變好一點",
           "score": {
             "heavy": 1,
@@ -1311,6 +1354,6 @@ window.CMU_FOOD_DATA = {
       "label": "宵夜"
     }
   ],
-  "generatedFrom": "CMU_今天吃什麼_餐廳資料表_v3_加入推薦前三名.xlsx",
+  "generatedFrom": "CMU_今天吃什麼_網站_mobile選單修正版；加入第7題口味分流",
   "generatedAt": "2026-05-27"
 };
