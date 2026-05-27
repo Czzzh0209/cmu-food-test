@@ -1,42 +1,21 @@
-# CMU 今天吃什麼？網站第一版
+# CMU 今天吃什麼？網站 v4
 
-這是一個靜態網站版本，使用純 HTML、CSS、JavaScript，可以部署到 GitHub Pages。
+本版本已擴充為 120 間餐廳資料庫：
 
-## 本機測試
+- 英才校區：40 間
+- 水湳校區：40 間
+- 附醫附近：40 間
 
-最簡單的方式：直接雙擊 `index.html`。
+## 功能
 
-若瀏覽器擋本機檔案，請在此資料夾開啟終端機，輸入：
+- 7 題心理測驗
+- 手機友善按鈕式校區與時段選擇
+- 依標籤分數推薦前 3 名餐廳
+- Google Maps 導航連結
+- 餐廳資料含 sourceName、sourceUrl、verificationStatus
 
-```bash
-python -m http.server 8000
-```
+## 注意
 
-接著打開：
+資料由網路文章、公開社群貼文與公開頁面整理而來。價格、營業時間、店家狀態與步行時間仍需正式展示前人工確認。
 
-```text
-http://localhost:8000
-```
-
-## Google Maps 導航修正
-
-本版已修正導航連結問題：
-
-- `data.js` 保留未編碼的 `mapQuery`，例如「盡心亭拉麵 台中市北區五常街60號」。
-- `app.js` 在使用者點擊結果卡片時，才用 `encodeURIComponent()` 產生 Google Maps URL。
-- 不再使用先前被截斷的 `mapUrl` 欄位。
-
-## 部署到 GitHub Pages
-
-1. 建立 GitHub repository。
-2. 上傳 `index.html`、`style.css`、`data.js`、`app.js`、`restaurants.json`。
-3. 進入 repository 的 Settings → Pages。
-4. Source 選 `Deploy from a branch`。
-5. Branch 選 `main`，資料夾選 `/root`。
-6. 儲存後等待 GitHub 產生網址。
-
-
-
-## 更新紀錄
-
-- v4：將「今天想吃哪種感覺？」拆成（1）與（2），總題數改為 7 題；每題維持 4 個選項，手機排版不變。
+最後更新：2026-05-27
