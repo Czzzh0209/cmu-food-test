@@ -25,7 +25,7 @@ const levelScore = {
 };
 
 function buildMapUrl(restaurant) {
-  const rawQuery = restaurant.mapQuery || `${restaurant.name} ${restaurant.area || ""} 台中市`;
+  const rawQuery = restaurant.mapQuery || `${restaurant.name} ${restaurant.area || ''} 台中市`;
   const destination = encodeURIComponent(rawQuery.trim());
   return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=walking`;
 }
@@ -143,6 +143,31 @@ function getDistanceScore(restaurant) {
   return 0;
 }
 
+function isLightOnlyCategory(restaurant) {
+  return ['便利商店', '飲料', '冰品甜點', '豆花', '包子饅頭'].some((keyword) =>
+    String(restaurant.category || '').includes(keyword)
+  );
+}
+
+function getMealPenalty(restaurant, userScores) {
+  // 午餐與晚餐時，飲料、甜點、便利商店不應該太容易擠進前三名。
+  // 但如果使用者明顯選到外帶、趕時間、省錢，仍保留被推薦的可能。
+  const urgentNeed = (userScores.fast || 0) + (userScores.takeaway || 0) + (userScores.cheap || 0);
+  if (!isLightOnlyCategory(restaurant)) return 0;
+  if (state.mealTime === 'late') return -1;
+  return urgentNeed >= 14 ? -1 : -3;
+}
+
+function getExploreBonus(restaurant) {
+  // v4 資料庫中，各校區前幾筆多半是舊版或校內店家。
+  // 擴充資料庫後，給後段資料一點探索加分，避免永遠只出現最前面的 30 間。
+  const match = String(restaurant.id || '').match(/_(\d+)/);
+  const numericId = match ? Number(match[1]) : 0;
+  if (numericId >= 31) return 2;
+  if (numericId >= 11) return 1;
+  return 0;
+}
+
 function scoreRestaurant(restaurant, userScores) {
   const wrongCampus = restaurant.campus !== state.campus;
   const wrongMealTime = !matchesMealTime(restaurant);
@@ -156,25 +181,73 @@ function scoreRestaurant(restaurant, userScores) {
   const distanceScore = getDistanceScore(restaurant);
   const speedScore = levelScore.speedLevel[restaurant.speedLevel] ?? 0;
   const queueScore = levelScore.queueLevel[restaurant.queueLevel] ?? 0;
-  const total = tagScore + budgetScore + distanceScore + speedScore + queueScore;
+  const mealPenalty = getMealPenalty(restaurant, userScores);
+  const exploreBonus = getExploreBonus(restaurant);
+  const total = tagScore + budgetScore + distanceScore + speedScore + queueScore + mealPenalty + exploreBonus;
 
   return {
     ...restaurant,
     score: total,
-    scoreParts: { tagScore, budgetScore, distanceScore, speedScore, queueScore }
+    scoreParts: { tagScore, budgetScore, distanceScore, speedScore, queueScore, mealPenalty, exploreBonus }
   };
 }
 
+function sortByScore(a, b) {
+  if (b.score !== a.score) return b.score - a.score;
+  if (a.walkTimeMin !== b.walkTimeMin) return a.walkTimeMin - b.walkTimeMin;
+  return String(a.name).localeCompare(String(b.name), 'zh-Hant');
+}
+
+function pickDiverseCandidate(candidates, chosen, userScores, mainTag) {
+  const usedIds = new Set(chosen.map((item) => item.id));
+  const usedCategories = new Set(chosen.map((item) => item.category));
+  const usedSources = new Set(chosen.map((item) => item.sourceName));
+  const bestScore = candidates[0]?.score ?? 0;
+
+  const pool = candidates
+    .filter((item) => !usedIds.has(item.id))
+    .filter((item) => item.score >= bestScore - 8 || item.score >= 8)
+    .slice(0, 24);
+
+  const ranked = pool.map((item) => {
+    const categoryBonus = usedCategories.has(item.category) ? -4 : 3;
+    const sourceBonus = usedSources.has(item.sourceName) ? 0 : 1;
+    const distanceExploreBonus = item.walkTimeMin >= 4 && item.walkTimeMin <= 12 ? 1.5 : 0;
+    const mainTagBonus = item.tags.includes(mainTag) ? 1 : 0;
+    const lightPenalty = chosen.length === 0 ? 0 : (isLightOnlyCategory(item) ? -2 : 0);
+    const randomTieBreaker = Math.random() * 1.2;
+
+    return {
+      ...item,
+      diversityScore: item.score + categoryBonus + sourceBonus + distanceExploreBonus + mainTagBonus + lightPenalty + randomTieBreaker
+    };
+  }).sort((a, b) => b.diversityScore - a.diversityScore);
+
+  return ranked[0] || candidates.find((item) => !usedIds.has(item.id));
+}
+
 function getTopRecommendations(userScores) {
+  const mainTag = determineMainTag(userScores);
   const scored = DATA.restaurants
     .map((restaurant) => scoreRestaurant(restaurant, userScores))
     .filter((restaurant) => restaurant.score > -999)
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return a.walkTimeMin - b.walkTimeMin;
-    });
+    .sort(sortByScore);
 
-  return scored.slice(0, 3);
+  if (scored.length <= 3) return scored;
+
+  const chosen = [];
+
+  // 第一張保留最高分，確保推薦仍然符合測驗結果。
+  chosen.push(scored[0]);
+
+  // 第二、三張改從高分候選池挑選，但要求類型與來源盡量分散。
+  while (chosen.length < 3) {
+    const next = pickDiverseCandidate(scored, chosen, userScores, mainTag);
+    if (!next) break;
+    chosen.push(next);
+  }
+
+  return chosen;
 }
 
 function renderScores(scores) {
